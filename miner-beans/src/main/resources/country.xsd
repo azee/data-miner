@@ -6,21 +6,12 @@
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
            jaxb:version="2.1">
 
-    <xs:element name="tour" type="Tour"/>
-    <xs:complexType name="Tour">
+    <xs:element name="country" type="Country"/>
+    <xs:complexType name="Country">
         <xs:sequence>
             <xs:element name="id" type="xs:string"/>
-            <xs:element name="source" type="xs:string"/>
             <xs:element name="title" type="xs:string"/>
-            <xs:element name="price" type="xs:int"/>
-            <xs:element name="absPrice" type="xs:int"/>
-            <xs:element name="currency" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
-            <xs:element name="url" type="xs:string"/>
-            <xs:element name="person" type="xs:int"/>
-            <xs:element name="adults" type="xs:int"/>
-            <xs:element name="children" type="xs:int"/>
-            <xs:element name="nights" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
 

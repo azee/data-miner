@@ -90,4 +90,21 @@
         </jaxb:bindings>
     </jaxb:bindings>
 
+    <!-- Country -->
+    <jaxb:bindings schemaLocation="country.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='Country']/xs:sequence/xs:element[@name='id']">
+            <annox:annotate target="field">
+                <annox:annotate annox:class="org.springframework.data.annotation.Id"/>
+            </annox:annotate>
+        </jaxb:bindings>
+
+        <jaxb:bindings node="xs:complexType[@name='Country']">
+            <annox:annotate target="class">
+                <annox:annotate annox:class="org.springframework.data.mongodb.core.mapping.Document"
+                                collection="tours_miner_country"/>
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+
 </jaxb:bindings>
