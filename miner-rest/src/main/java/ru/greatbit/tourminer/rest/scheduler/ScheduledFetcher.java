@@ -1,11 +1,17 @@
 package ru.greatbit.tourminer.rest.scheduler;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.greatbit.tourminer.beans.Source;
+import ru.greatbit.tourminer.beans.Tour;
+import ru.greatbit.tourminer.plugins.Plugin;
+import ru.greatbit.tourminer.plugins.PluginFactory;
+import ru.greatbit.tourminer.service.services.SourceService;
+import ru.greatbit.tourminer.service.services.TourService;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,24 +24,23 @@ import org.springframework.stereotype.Component;
 public class ScheduledFetcher {
 
     @Autowired
-    HazelcastInstance instance;
+    SourceService sourceService;
 
-    private final String LOCK_NAME = "scheduler";
+    @Autowired
+    TourService tourService;
+
+    @Autowired
+    PluginFactory pluginFactory;
 
     private final static Logger log = Logger.getLogger(ScheduledFetcher.class);
 
-    @Scheduled(fixedRate = 30000)
-    //Or by Cron @Scheduled(cron = "* 1 * * * ?")
+    @Scheduled(fixedRate = 7200000)
     public void executeInternal() throws Exception {
-        //Locking hazelcast
-        ILock lock = instance.getLock(LOCK_NAME);
-        if (lock.tryLock()){
-            try{
-                //Do scheduled job Something
-            }
-            finally {
-                lock.unlock();
-            }
+        for(Source source : sourceService.findAll()){
+            Plugin plugin = pluginFactory.getPlugin(source);
+            List<Tour> tours = plugin.parse(plugin.fetch(source));
+            plugin.matchCountries(source, tours);
+            tourService.updateBySource(source.getId(), tours);
         }
     }
 }

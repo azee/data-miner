@@ -1,6 +1,6 @@
 package ru.greatbit.tourminer.rest;
 
-import com.mycompany.template.beans.User;
+import ru.greatbit.tourminer.beans.User;
 import ru.greatbit.tourminer.service.exceptions.AuthException;
 import ru.greatbit.tourminer.service.services.UserService;
 import ru.greatbit.tourminer.service.utils.UserDataUtils;

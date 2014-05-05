@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import ru.greatbit.tourminer.beans.Tour;
 import ru.greatbit.tourminer.repositories.custom.TourRepositoryCustom;
+import ru.greatbit.utils.string.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +23,18 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
 
     @Override
     public List<Tour> findSortedByPrice(int limit) {
+        return findSortedByPrice(null, limit);
+    }
+
+    @Override
+    public List<Tour> findSortedByPrice(String country, int limit) {
         Query query = new Query();
         query.with(new Sort(Sort.Direction.ASC, Arrays.asList("absPrice")));
+
+        if (!StringUtils.emptyIfNull(country).equals("")){
+            query.addCriteria(Criteria.where("country").is(country));
+        }
+
         if(limit > 0){
             query.limit(limit);
         }

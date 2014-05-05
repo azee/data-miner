@@ -25,6 +25,16 @@ public class TourService {
         return tourRepository.findSortedByPrice(limit);
     }
 
+    /**
+     * Find sorted by price with specific country
+     * @param country
+     * @param limit
+     * @return
+     */
+    public List<Tour> findSortedByPrice(String country, int limit){
+        return tourRepository.findSortedByPrice(country, limit);
+    }
+
 
     /**
      * Find data by source

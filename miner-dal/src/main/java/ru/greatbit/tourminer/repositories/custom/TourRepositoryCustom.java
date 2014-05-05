@@ -10,6 +10,7 @@ import java.util.List;
   */
 public interface TourRepositoryCustom {
     public List<Tour> findSortedByPrice(int limit);
+    public List<Tour> findSortedByPrice(String country, int limit);
     public List<Tour> findBySource(String source);
     public void updateBySource(String source, List<Tour> tours);
 
