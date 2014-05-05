@@ -64,8 +64,8 @@ public class SomeBeanRestTest{
 //    }
 //
 //
-//    @Test
-//    public void testGetSomeBeans() throws Exception {
+    @Test
+    public void testGetSomeBeans() throws Exception {
 //        createSomeBeansCollection();
 //        Client client = Client.create();
 //        WebResource webResource = client.resource(SERVICE_PATH);
@@ -81,6 +81,6 @@ public class SomeBeanRestTest{
 //        for (SomeBean someBean : someBeans){
 //            webResource.queryParam("id", someBean.getId()).delete();
 //        }
-//    }
+    }
 
 }
