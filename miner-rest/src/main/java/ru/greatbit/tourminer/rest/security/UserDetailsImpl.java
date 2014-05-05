@@ -1,10 +1,10 @@
 package ru.greatbit.tourminer.rest.security;
 
-import com.mycompany.template.beans.Role;
-import com.mycompany.template.beans.User;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.greatbit.tourminer.beans.Role;
+import ru.greatbit.tourminer.beans.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -51,8 +51,8 @@ public class SomeBeanServiceTest {
 //    }
 //
 //
-//    @Test
-//    public void testGetSomeBeans() throws Exception {
+    @Test
+    public void testGetSomeBeans() throws Exception {
 //        SomeBean someBean = someBeanService.saveSomeBean(buildSomeBean());
 //        assertThat("Can't persist new someBean", someBean, notNullValue());
 //
@@ -65,7 +65,7 @@ public class SomeBeanServiceTest {
 //        someBean = someBeanService.getSomeBena(someBean.getId());
 //        assertThat("Remove persisted someBean by id", someBean, nullValue());
 //
-//    }
+    }
 
 
 }

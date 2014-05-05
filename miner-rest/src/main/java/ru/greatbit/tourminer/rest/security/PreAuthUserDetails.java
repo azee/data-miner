@@ -1,7 +1,7 @@
 package ru.greatbit.tourminer.rest.security;
 
-import com.mycompany.template.beans.Role;
-import com.mycompany.template.beans.User;
+import ru.greatbit.tourminer.beans.Role;
+import ru.greatbit.tourminer.beans.User;
 import ru.greatbit.tourminer.service.services.UserService;
 import ru.greatbit.tourminer.service.utils.UserDataUtils;
 import org.apache.log4j.Logger;
