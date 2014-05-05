@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns="urn:beans.miner.greatbit.ru"
-           targetNamespace="urn:beans.miner.greatbit.ru"
+           xmlns="urn:beans.tourminer.greatbit.ru"
+           targetNamespace="urn:beans.tourminer.greatbit.ru"
            elementFormDefault="qualified"
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
            jaxb:version="2.1">
 
-    <xs:element name="group" type="Group"/>
-    <xs:complexType name="Group">
+    <xs:element name="tour" type="Tour"/>
+    <xs:complexType name="Tour">
         <xs:sequence>
             <xs:element name="id" type="xs:string"/>
+            <xs:element name="source" type="xs:string"/>
             <xs:element name="title" type="xs:string"/>
+            <xs:element name="price" type="xs:int"/>
+            <xs:element name="currency" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
+            <xs:element name="url" type="xs:string"/>
+            <xs:element name="person" type="xs:int"/>
+            <xs:element name="adults" type="xs:int"/>
+            <xs:element name="children" type="xs:int"/>
+            <xs:element name="nights" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
 
