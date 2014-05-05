@@ -344,7 +344,7 @@
                     <encoding>UTF-8</encoding>
                     <verbose>false</verbose>
                     <show>public</show>
-                    <subpackages>com.mycompany.template.api</subpackages>
+                    <subpackages>ru.greatbit.tourminer.rest</subpackages>
                     <doclet>com.sun.jersey.wadl.resourcedoc.ResourceDoclet</doclet>
                     <docletArtifacts>
                         <docletArtifact>
