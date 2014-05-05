@@ -9,8 +9,8 @@ import java.util.List;
  * User: azee
   */
 public interface TourRepositoryCustom {
-    List<Tour> findSortedByPrice(int limit);
-    List<Tour> findBySource(String source);
-    void updateBySource(String source, List<Tour> tours);
+    public List<Tour> findSortedByPrice(int limit);
+    public List<Tour> findBySource(String source);
+    public void updateBySource(String source, List<Tour> tours);
 
 }

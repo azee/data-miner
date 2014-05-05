@@ -68,6 +68,11 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>ru.greatbit</groupId>
+                <artifactId>java-utils</artifactId>
+                <version>1.5</version>
+            </dependency>
 
             <!-- Spring framework -->
             <dependency>

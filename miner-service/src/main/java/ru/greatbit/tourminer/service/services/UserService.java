@@ -1,0 +1,353 @@
+package ru.greatbit.tourminer.service.services;
+
+import ru.greatbit.tourminer.beans.Role;
+import ru.greatbit.tourminer.beans.User;
+import ru.greatbit.tourminer.repositories.UserRepository;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import ru.greatbit.tourminer.service.exceptions.AuthException;
+import ru.greatbit.tourminer.service.utils.UserDataUtils;
+import ru.greatbit.utils.string.StringUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: azee
+  */
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository usersRepository;
+
+    @Autowired
+    UserDataUtils userDataUtils;
+
+    @Value("#{internal['token.timeout']}")
+    private long TOKEN_TIMEOUT;
+
+    @Value("#{internal['cookie.timeout']}")
+    private long COOKIE_TIMEOUT;
+
+    /**
+     * Creates a user with UNVERIFIED permissions
+     * @param login
+     * @param password
+     * @param email
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
+    public User createUser(String login, String password, String email) throws NoSuchAlgorithmException {
+        User user = new User();
+        user.setName(login);
+        user.setPassword(StringUtils.getMd5String(password));
+        user.setEmail(email);
+        user.setId(ObjectId.get().toString());
+        user.getRoles().clear();
+        user.getRoles().add(Role.ROLE_UNVERIFIED);
+
+        //ToDo: send auth email here
+
+        usersRepository.save(user);
+        return user;
+    }
+
+    /**
+     * Will fetch the user by temp id, remove him, set new Role and save with a new ID
+     * @param id
+     * @return
+     */
+    public User verifyUser(String id) throws AuthException {
+        User user = usersRepository.findOne(id);
+        if (user == null){
+            throw new AuthException("Can't find a user.");
+        }
+
+        if (hasRole(user, Role.ROLE_UNVERIFIED)){
+            removeRoleFromList(Role.ROLE_UNVERIFIED.value(), user);
+            usersRepository.delete(id);
+            user.setId(ObjectId.get().toString());
+            return usersRepository.save(user);
+        }
+
+        return user;
+    }
+
+
+    /**
+     * Update a specific token expiration with default value
+     * @param token
+     * @throws Exception
+     */
+    private void updateTokenExpire(String token) throws Exception {
+        updateTokenExpire(token, TOKEN_TIMEOUT);
+    }
+
+    /**
+     * Update a specific token expiration
+     * @param token
+     * @throws Exception
+     */
+    private void updateTokenExpire(String token, long expire) throws Exception {
+        User user = usersRepository.findByToken(token);
+        user.setTokenExpire(user.getTokenExpire() + expire);
+        usersRepository.save(user);
+
+    }
+
+    /**
+     * Update a specific cookie expiration with default value
+     * @param user
+     * @throws Exception
+     */
+    private void updateCookieExpire(User user) throws AuthException {
+        user.setCookieExpire(user.getCookieExpire() + COOKIE_TIMEOUT);
+        usersRepository.save(user);
+    }
+
+
+    /**
+     * Authenticate a user by pass and login
+     * @param login
+     * @param pass
+     * @return
+     * @throws Exception
+     */
+    public User authenticate(String login, String pass) throws AuthException, NoSuchAlgorithmException {
+        if (pass == null || login == null){
+            throw new AuthException("You must specify login and password");
+        }
+
+        //Encode a pass - we don't want to store passwords as is
+        String encodedPass = StringUtils.getMd5String(pass);
+        User user = getUserByName(login);
+        if (user == null){
+            throw new AuthException("Can't find user [" + login + "].");
+        }
+        if (!encodedPass.equals(user.getPassword())){
+            throw new AuthException("Password is incorrect");
+        }
+
+        //Set a new cookie
+        user.setSid(UUID.randomUUID().toString());
+        user.setCookieExpire(new Date().getTime() + COOKIE_TIMEOUT);
+        usersRepository.save(user);
+
+        return user;
+    }
+
+    /**
+     * Authenticate a user by sessionId cookie
+     * @param hsr
+     * @return
+     * @throws Exception
+     */
+    public User checkSid(HttpServletRequest hsr) throws AuthException {
+        if (hsr == null){
+            throw new AuthException("Cookie is empty");
+        }
+
+        //Get a cookie from the request
+        Cookie cookie = userDataUtils.getSidFromRequest(hsr);
+        if (cookie == null){
+            throw new AuthException("Cookie is empty");
+        }
+
+        User user = getUserByCookie(cookie.getValue());
+        if (user == null){
+            throw new AuthException("Can't find user for provided cookies.");
+        }
+        if (user.getCookieExpire() < new Date().getTime() ||
+                !cookie.getValue().equals(user.getSid())){
+            throw new AuthException("Cookie has expired");
+        }
+        updateCookieExpire(user);
+        return user;
+    }
+
+    /**
+     * Get e user with specific cookie
+     * @param cookie
+     * @return
+     * @throws Exception
+     */
+    public User getUserByCookie(String cookie) throws AuthException {
+        User user = usersRepository.findByCookie(cookie);
+        if (user != null && user.getCookieExpire() > new Date().getTime()){
+            updateCookieExpire(user);
+            return user;
+        }
+        else {
+            throw new AuthException("Can't find user or cookie has expired.");
+        }
+    }
+
+    /**
+     * Get a user with given token
+     * @param token
+     * @return
+     * @throws Exception
+     */
+    public User getUserByToken(String token) throws Exception {
+        User user = usersRepository.findByToken(token);
+        if (user != null && user.getTokenExpire() > new Date().getTime()){
+            return user;
+        }
+        else {
+            throw new RuntimeException("Can't find user or token has expired.");
+        }
+    }
+
+    /**
+     * Get a user by name
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public User getUserByName(String name) throws AuthException {
+        User user = usersRepository.findByName(name);
+        if (user != null){
+            return user;
+        }
+        else {
+            throw new AuthException("Can't find user [" + name + "]");
+        }
+    }
+
+    /**
+     * Get a user by email
+     * @param email
+     * @return
+     * @throws Exception
+     */
+    public User getUserByEmail(String email) throws AuthException {
+        User user = usersRepository.findByEmail(email);
+        if (user != null){
+            return user;
+        }
+        else {
+            throw new AuthException("Can't find user with email [" + email + "]");
+        }
+    }
+
+    /**
+     * Return a sorted by name list of all users
+     * @return
+     * @throws Exception
+     */
+    public List<User> getAllUsers() throws Exception {
+        List<User> result = (List<User>) usersRepository.findAll();
+        Collections.sort(result, new Comparator<User>() {
+            public int compare(User user, User user1) {
+                if (user.getName() == null) {
+                    user.setName("");
+                }
+                if (user1.getName() == null) {
+                    user1.setName("");
+                }
+                return user.getName().compareTo(user1.getName());
+            }
+        });
+        return result;
+    }
+
+    /**
+     * Removes user token
+     * @param token
+     * @throws Exception
+     */
+    public User removeUserToken(String token) throws Exception {
+        User user = usersRepository.findByToken(token);
+        if (user != null) {
+            user.setToken(null);
+            user.setTokenExpire(0);
+            usersRepository.save(user);
+        }
+        return new User();
+    }
+
+    /**
+     * Removes user cookie
+     * @param cookie
+     * @throws Exception
+     */
+    public User removeUserCookie(String cookie) throws Exception {
+        User user = usersRepository.findByCookie(cookie);
+        if (user != null) {
+            user.setSid("");
+            user.setCookieExpire(0);
+            usersRepository.save(user);
+        }
+        return new User();
+    }
+
+    /**
+     * Removes user cookie
+     * @param user
+     * @throws Exception
+     */
+    public User removeUserCookie(User user) throws Exception {
+        if (user != null) {
+            user.setSid("");
+            user.setCookieExpire(0);
+            usersRepository.save(user);
+        }
+        return new User();
+    }
+
+    /**
+     * Add a Role to a user
+     * @param role
+     * @param user
+     */
+    public void addRole(Role role, User user) {
+        user.getRoles().add(role);
+        usersRepository.save(user);
+    }
+
+    /**
+     * Remove a role from the user
+     * @param role
+     * @param user
+     */
+    public void removeRole(String role, User user) {
+        removeRoleFromList(role, user);
+        usersRepository.save(user);
+    }
+
+    /**
+     * Search for a role in a user object
+     * @param user
+     * @param role
+     * @return
+     */
+    private boolean hasRole(User user, Role role){
+        for (Role presentedRole : user.getRoles()){
+            if (presentedRole.equals(role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removes a role from user if it exists
+     * @param role
+     * @param user
+     */
+    public void removeRoleFromList(String role, User user) {
+        List<Role> newRoles = new ArrayList<Role>();
+        for (Role presentedRole : user.getRoles()){
+            if (!presentedRole.equals(role)) {
+                newRoles.add(presentedRole);
+            }
+        }
+        user.getRoles().clear();
+        user.getRoles().addAll(newRoles);
+    }
+}

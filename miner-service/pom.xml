@@ -22,6 +22,11 @@
             <artifactId>miner-dal</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>ru.greatbit</groupId>
+            <artifactId>java-utils</artifactId>
+        </dependency>
+
         <!-- Spring framework -->
         <dependency>
             <groupId>org.springframework</groupId>
