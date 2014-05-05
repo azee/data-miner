@@ -1,4 +1,4 @@
-package com.mycompany.template.security;
+package ru.greatbit.tourminer.rest.security;
 
 import com.mycompany.template.beans.Role;
 import com.mycompany.template.beans.User;

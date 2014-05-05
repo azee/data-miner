@@ -1,4 +1,4 @@
-package com.mycompany.template.scheduler;
+package ru.greatbit.tourminer.rest.scheduler;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class SchedulerJob {
+public class ScheduledFetcher {
 
     @Autowired
     HazelcastInstance instance;
 
     private final String LOCK_NAME = "scheduler";
 
-    private final static Logger log = Logger.getLogger(SchedulerJob.class);
+    private final static Logger log = Logger.getLogger(ScheduledFetcher.class);
 
     @Scheduled(fixedRate = 30000)
     //Or by Cron @Scheduled(cron = "* 1 * * * ?")

@@ -1,4 +1,4 @@
-package com.mycompany.template.api;
+package ru.greatbit.tourminer.rest;
 
 import com.sun.jersey.server.wadl.WadlApplicationContext;
 

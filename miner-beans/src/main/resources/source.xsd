@@ -11,11 +11,12 @@
         <xs:sequence>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="groupId" type="xs:string"/>
+            <xs:element name="pluginId" type="xs:string"/>
             <xs:element name="title" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
             <xs:element name="url" type="xs:string"/>
             <xs:element name="method" type="xs:string"/>
-            <xs:element name="matcher" type="xs:string"/>
+            <xs:element name="countryDict" type="CountryDict" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="property" type="Property" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="header" type="Header" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="lastRequested" type="xs:long"/>
@@ -38,6 +39,28 @@
             <xs:element name="value" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:element name="method" type="Method"/>
+    <xs:simpleType name="Method">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="put"/>
+            <xs:enumeration value="post"/>
+            <xs:enumeration value="get"/>
+            <xs:enumeration value="delete"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:element name="countryDict" type="CountryDict"/>
+    <xs:complexType name="CountryDict">
+        <xs:sequence>
+            <xs:element name="origin" type="xs:string"/>
+            <xs:element name="countryId" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+
 
 
 </xs:schema>

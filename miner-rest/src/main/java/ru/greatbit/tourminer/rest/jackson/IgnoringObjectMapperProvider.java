@@ -1,4 +1,4 @@
-package com.mycompany.template.api.jackson;
+package ru.greatbit.tourminer.rest.jackson;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;

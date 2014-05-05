@@ -1,4 +1,4 @@
-package com.mycompany.template.api;
+package ru.greatbit.tourminer.rest;
 
 import com.mycompany.template.beans.User;
 import ru.greatbit.tourminer.service.exceptions.AuthException;
