@@ -10,7 +10,7 @@
     <artifactId>miner-rest</artifactId>
 
     <name>Miner API REST Services</name>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <description>REST-full endpoints of Miner services</description>
 
     <dependencies>
