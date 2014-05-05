@@ -28,8 +28,8 @@ public class TourRest {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("/")
-    public List<Tour> getHotTours(String country, @QueryParam("limit") int limit){
+    @Path("/{country}")
+    public List<Tour> getHotTours(@PathParam("country") String country, @QueryParam("limit") int limit){
         return tourService.findSortedByPrice(country, limit);
     }
 }
